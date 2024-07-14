@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint:fix": "biome lint --write",
+    "lint": "biome lint",
+    "format:write": "biome format --write",
+    "format:check": "biome format"
   },
   "dependencies": {
     "react": "^18",
@@ -14,11 +17,12 @@
     "next": "14.2.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@biomejs/biome": "1.8.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }
