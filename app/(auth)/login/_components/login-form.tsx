@@ -1,6 +1,7 @@
 "use client"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { LoadingButton } from "@/components/loading-button"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -13,10 +14,18 @@ import { Input } from "@/components/ui/input"
 import { signIn } from "@/lib/api/auth"
 import { type UserSchema, userSchema } from "@/lib/validation/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 export function LoginForm() {
+  const { execute, isExecuting } = useAction(signIn, {
+    onError: ({ error }) => {
+      toast.error(error.serverError)
+    },
+  })
+
   const form = useForm<UserSchema>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -25,15 +34,11 @@ export function LoginForm() {
     },
   })
 
-  const onSubmit = async (data: UserSchema) => {
-    await signIn(data)
-  }
-
   return (
     <>
       <h1 className="text-2xl font-bold">Log in</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(execute)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
@@ -60,7 +65,9 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Log in</Button>
+          <LoadingButton isLoading={isExecuting} type="submit">
+            Log in
+          </LoadingButton>
         </form>
         <p>
           Don't have an account?{" "}

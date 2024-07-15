@@ -1,4 +1,5 @@
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle"
+import type { Options } from "@node-rs/argon2"
 import { Lucia, type Session, type User } from "lucia"
 import { cookies } from "next/headers"
 import { cache } from "react"
@@ -56,6 +57,13 @@ export const validateRequest = cache(
     return result
   },
 )
+
+export const authHashConfig: Options = {
+  memoryCost: 19456,
+  timeCost: 2,
+  outputLen: 32,
+  parallelism: 1,
+}
 
 declare module "lucia" {
   interface Register {

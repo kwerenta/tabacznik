@@ -1,16 +1,17 @@
 "use client"
 
+import { toast } from "sonner"
+
+import { Button } from "@/components/ui/button"
 import { signOut } from "@/lib/api/auth"
-import { Button } from "./ui/button"
+import { useAction } from "next-safe-action/hooks"
 
 export function LogOutButton() {
-  return (
-    <Button
-      onClick={async () => {
-        await signOut()
-      }}
-    >
-      Log Out
-    </Button>
-  )
+  const { execute } = useAction(signOut, {
+    onError: ({ error }) => {
+      toast.error(error.serverError)
+    },
+  })
+
+  return <Button onClick={() => execute()}>Log Out</Button>
 }

@@ -1,26 +1,20 @@
 "use server"
 
-import { actionClient, authActionClient } from "@/lib/api"
+import { ActionError, actionClient, authActionClient } from "@/lib/api"
+import { authHashConfig, lucia } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { users } from "@/lib/db/schema"
+import { userSchema } from "@/lib/validation/auth"
 import { hash, verify } from "@node-rs/argon2"
 import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { z } from "zod"
-import { lucia } from "../auth"
-import { db } from "../db"
-import { users } from "../db/schema"
-import { userSchema } from "../validation/auth"
 
 export const signUp = actionClient
   .schema(userSchema)
   .action(async ({ parsedInput: { email, password } }) => {
-    const passwordHash = await hash(password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1,
-    })
+    const passwordHash = await hash(password, authHashConfig)
     const userId = generateIdFromEntropySize(10) // 16 characters long
 
     const [existingUser] = await db
@@ -28,11 +22,8 @@ export const signUp = actionClient
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
 
-    if (existingUser) {
-      return {
-        error: "Email already in use",
-      }
-    }
+    if (existingUser)
+      throw new ActionError("User with this email already exists")
 
     await db.insert(users).values({
       id: userId,
@@ -57,20 +48,15 @@ export const signIn = actionClient
       .select()
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
+    if (!existingUser) throw new ActionError("Incorrect username or password")
 
-    // Check if passsord is valid even if user doesn't exist to prevent timing attacks
-    const isPasswordValid = await verify(existingUser.passwordHash, password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1,
-    })
-
-    if (!existingUser || !isPasswordValid) {
-      return {
-        error: "Incorrect username or password",
-      }
-    }
+    const isPasswordValid = await verify(
+      existingUser?.passwordHash,
+      password,
+      authHashConfig,
+    )
+    if (!isPasswordValid)
+      throw new ActionError("Incorrect username or password")
 
     const session = await lucia.createSession(existingUser.id, {})
     const sessionCookie = lucia.createSessionCookie(session.id)
