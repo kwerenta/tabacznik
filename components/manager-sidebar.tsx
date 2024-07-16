@@ -4,20 +4,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { managerNavConfig } from "@/config/nav"
 import { cn } from "@/lib/utils"
-import {
-  Cigarette,
-  Home,
-  LineChart,
-  type LucideIcon,
-  Package,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react"
+import { Cigarette, type LucideIcon, Settings } from "lucide-react"
 import Link from "next/link"
 
-export function Sidebar() {
+export function ManagerSidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <TooltipProvider>
@@ -29,14 +21,18 @@ export function Sidebar() {
             <Cigarette className="h-4 w-4 transition-all group-hover:scale-110" />
             <span className="sr-only">Tabacznik</span>
           </Link>
-          <SidebarItem href="/manager" label="Dashboard" Icon={Home} isActive />
-          <SidebarItem href="#" label="Orders" Icon={ShoppingCart} />
-          <SidebarItem href="#" label="Products" Icon={Package} />
-          <SidebarItem href="#" label="Customers" Icon={Users2} />
-          <SidebarItem href="#" label="Analytics" Icon={LineChart} />
+          {managerNavConfig.map((item, index) => (
+            <SidebarNavItem
+              key={`sidebar-${item.href}`}
+              href={item.href}
+              label={item.label}
+              Icon={item.Icon}
+              isActive={index === 0}
+            />
+          ))}
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
-          <SidebarItem href="#" label="Settings" Icon={Settings} />
+          <SidebarNavItem href="#" label="Settings" Icon={Settings} />
         </nav>
       </TooltipProvider>
     </aside>
@@ -50,7 +46,7 @@ interface SidebarItemProps {
   isActive?: boolean
 }
 
-function SidebarItem({ href, label, Icon, isActive }: SidebarItemProps) {
+function SidebarNavItem({ href, label, Icon, isActive }: SidebarItemProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
