@@ -3,7 +3,7 @@
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { signOut } from "@/lib/api/auth"
+import { signOut } from "@/lib/api/actions/auth"
 import { useAction } from "next-safe-action/hooks"
 
 export function LogOutButton() {

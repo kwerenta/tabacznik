@@ -1,7 +1,7 @@
 "use client"
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { signOut } from "@/lib/api/auth"
+import { signOut } from "@/lib/api/actions/auth"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
 

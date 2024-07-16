@@ -26,7 +26,7 @@ export const managerNavConfig: NavItem[] = [
   },
   {
     label: "Products",
-    href: "#",
+    href: "/manager/products",
     Icon: Package,
   },
   {
