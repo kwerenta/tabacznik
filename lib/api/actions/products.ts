@@ -2,7 +2,11 @@
 
 import { db } from "@/lib/db"
 import { products } from "@/lib/db/schema"
-import { newProductSchema, productIdSchema } from "@/lib/validations/products"
+import {
+  editProductSchema,
+  newProductSchema,
+  productIdSchema,
+} from "@/lib/validations/products"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
@@ -15,6 +19,17 @@ export const createProduct = managerActionClient
     const slug = newProduct.name.toLowerCase().replace(/\s+/g, "-")
 
     await db.insert(products).values({ slug, ...newProduct })
+    return redirect("/manager/products")
+  })
+
+export const editProduct = managerActionClient
+  .schema(editProductSchema)
+  .action(async ({ parsedInput: newProduct }) => {
+    // TODO: Add slug validation and updating
+    await db
+      .update(products)
+      .set({ ...newProduct })
+      .where(eq(products.id, newProduct.id))
     return redirect("/manager/products")
   })
 

@@ -1,9 +1,9 @@
-import { NewProductForm } from "./_components/new-product-form"
+import { ProductForm } from "../_components/product-form"
 
 export default function NewProductPage() {
   return (
     <div className="mx-auto max-w-[60rem]">
-      <NewProductForm />
+      <ProductForm />
     </div>
   )
 }

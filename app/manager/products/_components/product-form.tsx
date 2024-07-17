@@ -14,9 +14,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { createProduct } from "@/lib/api/actions/products"
+import { createProduct, editProduct } from "@/lib/api/actions/products"
+import type { Product } from "@/lib/db/schema"
 import { cn } from "@/lib/utils"
-import { type NewProduct, newProductSchema } from "@/lib/validations/products"
+import {
+  type NewProductValues,
+  newProductSchema,
+} from "@/lib/validations/products"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronLeft } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -24,19 +28,31 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function NewProductForm() {
-  const form = useForm<NewProduct>({
+interface ProductFormProps {
+  product?: Product
+}
+
+export function ProductForm({ product }: ProductFormProps) {
+  const form = useForm<NewProductValues>({
     resolver: zodResolver(newProductSchema),
-    defaultValues: {
-      name: "",
-      description: null,
-      price: 0,
-      stock: 0,
-      isPublished: false,
-    },
+    defaultValues: product
+      ? {
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          stock: product.stock,
+          isPublished: product.isPublished,
+        }
+      : {
+          name: "",
+          description: null,
+          price: 0,
+          stock: 0,
+          isPublished: false,
+        },
   })
 
-  const { execute } = useAction(createProduct, {
+  const { execute: createProductAction } = useAction(createProduct, {
     onSuccess: () => {
       toast.success("Product created successfully!")
     },
@@ -45,9 +61,23 @@ export function NewProductForm() {
     },
   })
 
+  const { execute: editProductAction } = useAction(editProduct, {
+    onSuccess: () => {
+      toast.success("Product edited successfully!")
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError)
+    },
+  })
+
+  const onSubmit = (values: NewProductValues) => {
+    if (product) editProductAction({ ...values, id: product.id })
+    else createProductAction(values)
+  }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(execute)} className="grid gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <div className="flex gap-4 items-center">
           <Link
             href="/manager/products"
@@ -63,14 +93,14 @@ export function NewProductForm() {
             <span className="sr-only">Back</span>
           </Link>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-            New Product
+            {product ? product.name : "New Product"}
           </h1>
           <Button
             type="submit"
             size="sm"
             className="hidden items-center md:ml-auto md:flex"
           >
-            Create Product
+            {product ? "Save" : "Create"} Product
           </Button>
         </div>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
@@ -196,7 +226,7 @@ export function NewProductForm() {
         </div>
         <div className="flex items-center justify-center gap-2 md:hidden">
           <Button type="submit" size="sm">
-            Create Product
+            {product ? "Save" : "Create"} Product
           </Button>
         </div>
       </form>

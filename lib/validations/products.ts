@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+export const productIdSchema = z.number()
+
 export const newProductSchema = z.object({
   name: z.string().min(3).max(255),
   description: z.string().min(3).max(1023).nullable(),
@@ -7,7 +9,8 @@ export const newProductSchema = z.object({
   stock: z.number().min(0),
   isPublished: z.boolean(),
 })
+export type NewProductValues = z.infer<typeof newProductSchema>
 
-export type NewProduct = z.infer<typeof newProductSchema>
-
-export const productIdSchema = z.number()
+export const editProductSchema = newProductSchema.extend({
+  id: productIdSchema,
+})

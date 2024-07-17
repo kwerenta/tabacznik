@@ -5,4 +5,4 @@ export const userSchema = z.object({
   password: z.string().min(6).max(255),
 })
 
-export type UserSchema = z.infer<typeof userSchema>
+export type UserValues = z.infer<typeof userSchema>

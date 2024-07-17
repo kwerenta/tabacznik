@@ -25,6 +25,7 @@ import type { Product } from "@/lib/db/schema"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import Link from "next/link"
 import { toast } from "sonner"
 
 export const productColumns: ColumnDef<Product>[] = [
@@ -80,7 +81,9 @@ export const productColumns: ColumnDef<Product>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <Link href={`/manager/products/${product.id}/edit`}>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+              </Link>
               <AlertDialogTrigger asChild>
                 <DropdownMenuItem>Delete</DropdownMenuItem>
               </AlertDialogTrigger>
