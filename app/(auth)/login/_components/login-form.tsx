@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { signIn } from "@/lib/api/actions/auth"
-import { type UserSchema, userSchema } from "@/lib/validation/auth"
+import { type UserSchema, userSchema } from "@/lib/validations/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
