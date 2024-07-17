@@ -9,3 +9,5 @@ export const newProductSchema = z.object({
 })
 
 export type NewProduct = z.infer<typeof newProductSchema>
+
+export const productIdSchema = z.number()
