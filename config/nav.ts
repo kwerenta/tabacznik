@@ -7,7 +7,7 @@ import {
   Users2,
 } from "lucide-react"
 
-interface NavItem {
+export interface NavItem {
   href: string
   label: string
   Icon: LucideIcon

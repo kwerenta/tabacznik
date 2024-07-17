@@ -21,16 +21,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { managerNavConfig } from "@/config/nav"
-import { cn } from "@/lib/utils"
-import {
-  Cigarette,
-  type LucideIcon,
-  PanelLeft,
-  Settings,
-  User,
-} from "lucide-react"
+import { Cigarette, PanelLeft, Settings, User } from "lucide-react"
 import Link from "next/link"
 import { LogoutDropdownItem } from "./logout-dropdown-item"
+import { MobileNavItem } from "./manager-nav-item"
 
 export function ManagerHeader() {
   return (
@@ -56,16 +50,18 @@ export function ManagerHeader() {
             <SheetDescription className="sr-only">
               Mobile navigation
             </SheetDescription>
-            {managerNavConfig.map((item, index) => (
+            {managerNavConfig.map((item) => (
               <MobileNavItem
-                key={`mobile-${item.href}`}
+                key={`mobile-${item.label}`}
                 href={item.href}
                 label={item.label}
-                Icon={item.Icon}
-                isActive={index === 0}
-              />
+              >
+                <item.Icon className="w-5 h-5" />
+              </MobileNavItem>
             ))}
-            <MobileNavItem href="#" label="Settings" Icon={Settings} />
+            <MobileNavItem href="#" label="Settings">
+              <Settings className="w-5 h-5" />
+            </MobileNavItem>
           </nav>
         </SheetContent>
       </Sheet>
@@ -91,29 +87,5 @@ export function ManagerHeader() {
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
-  )
-}
-
-interface MobileNavItemProps {
-  href: string
-  label: string
-  Icon: LucideIcon
-  isActive?: boolean
-}
-
-function MobileNavItem({ href, label, Icon, isActive }: MobileNavItemProps) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-4 px-2.5",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
-      )}
-    >
-      <Icon className="h-5 w-5" />
-      {label}
-    </Link>
   )
 }
