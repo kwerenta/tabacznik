@@ -5,6 +5,7 @@ export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
   email: text("email").notNull(),
   passwordHash: text("password_hash").notNull(),
+  isManager: integer("is_manager", { mode: "boolean" }).default(false),
 })
 
 export const sessions = sqliteTable("session", {

@@ -5,9 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { assertManager } from "@/lib/auth"
 import { CreditCard, DollarSign, Users } from "lucide-react"
 
-export default function ManagerDashboardPage() {
+export default async function ManagerDashboardPage() {
+  await assertManager()
+
   return (
     <main className="space-y-4">
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

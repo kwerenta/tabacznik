@@ -18,12 +18,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAllProducts } from "@/lib/api/queries/products"
+import { assertManager } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { ListFilter, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { ProductsTable } from "./_components/products-table"
 
 export default async function ProductsPage() {
+  await assertManager()
   const products = await getAllProducts()
 
   return (

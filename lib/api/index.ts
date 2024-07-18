@@ -29,9 +29,8 @@ export const managerActionClient = actionClient.use(async ({ next }) => {
   if (!user || !session)
     throw new ActionError("You need to be logged in to perform this action")
 
-  // TODO: Uncomment this code when user roles will be implemented
-  // if (!user.isManager)
-  //   throw new ActionError("You need to be an manager to perform this action")
+  if (!user.isManager)
+    throw new ActionError("You need to be an manager to perform this action")
 
   return next({ ctx: { user, session } })
 })

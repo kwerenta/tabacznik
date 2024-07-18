@@ -2,6 +2,7 @@ import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle"
 import type { Options } from "@node-rs/argon2"
 import { Lucia, type Session, type User } from "lucia"
 import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 import { cache } from "react"
 import { db } from "./db"
 import { sessions, users } from "./db/schema"
@@ -18,6 +19,7 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
+      isManager: attributes.isManager,
     }
   },
 })
@@ -58,6 +60,20 @@ export const validateRequest = cache(
   },
 )
 
+export async function assertUser(redirectUrl = "/login") {
+  const { user } = await validateRequest()
+
+  if (!user) return redirect(redirectUrl)
+  return user
+}
+
+export async function assertManager(redirectUrl = "/") {
+  const { user } = await validateRequest()
+
+  if (!user || !user.isManager) return redirect(redirectUrl)
+  return user
+}
+
 export const authHashConfig: Options = {
   memoryCost: 19456,
   timeCost: 2,
@@ -74,4 +90,5 @@ declare module "lucia" {
 
 interface DatabaseUserAttributes {
   email: string
+  isManager: boolean
 }

@@ -1,10 +1,8 @@
 import { LogOutButton } from "@/components/logout-button"
-import { validateRequest } from "@/lib/auth"
-import { redirect } from "next/navigation"
+import { assertUser } from "@/lib/auth"
 
 export default async function IndexPage() {
-  const { user } = await validateRequest()
-  if (!user) redirect("/login")
+  const user = await assertUser()
 
   return (
     <main className="container flex flex-col items-center">
