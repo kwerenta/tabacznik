@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { signIn } from "@/lib/api/actions/auth"
-import { type UserValues, userSchema } from "@/lib/validations/auth"
+import {
+  type UserCredentialsValues,
+  userCredentialsSchema,
+} from "@/lib/validations/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -26,8 +29,8 @@ export function LoginForm() {
     },
   })
 
-  const form = useForm<UserValues>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<UserCredentialsValues>({
+    resolver: zodResolver(userCredentialsSchema),
     defaultValues: {
       email: "",
       password: "",

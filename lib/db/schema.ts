@@ -3,12 +3,16 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  phone: text("phone").notNull(),
   email: text("email").notNull(),
   passwordHash: text("password_hash").notNull(),
   isManager: integer("is_manager", { mode: "boolean" })
     .notNull()
     .default(false),
 })
+export type User = typeof users.$inferSelect
 
 export const sessions = sqliteTable("session", {
   id: text("id").notNull().primaryKey(),

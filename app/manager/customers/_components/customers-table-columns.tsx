@@ -19,14 +19,26 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { User } from "@/lib/db/schema"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { User } from "lucia"
 import { MoreHorizontal } from "lucide-react"
 
-export const customerColumns: ColumnDef<User>[] = [
+export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
+  {
+    accessorKey: "firstName",
+    header: "First name",
+  },
+  {
+    accessorKey: "lastName",
+    header: "Last name",
+  },
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone",
   },
   {
     id: "actions",

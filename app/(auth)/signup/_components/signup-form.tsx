@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { signUp } from "@/lib/api/actions/auth"
-import { type UserValues, userSchema } from "@/lib/validations/auth"
+import { type NewUserValues, newUserSchema } from "@/lib/validations/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -26,9 +26,12 @@ export function SignUpForm() {
     },
   })
 
-  const form = useForm<UserValues>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<NewUserValues>({
+    resolver: zodResolver(newUserSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      phone: "",
       email: "",
       password: "",
     },
@@ -39,6 +42,45 @@ export function SignUpForm() {
       <h1 className="text-2xl font-bold">Sign up</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(execute)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input type="tel" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
