@@ -6,17 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { getOrderDetails, getRecentOrders } from "@/lib/api/queries/orders"
+import { getRecentOrders } from "@/lib/api/queries/orders"
 import { assertManager } from "@/lib/auth"
 import { formatCurrency } from "@/lib/formatters"
-import { OrderDetailsCard } from "./_components/order-details"
+import { Suspense } from "react"
+import { OrderDetailsCard } from "./_components/order-details-card"
+import { OrderDetailsCardSkeleton } from "./_components/order-details-card-skeleton"
 import { orderColumns } from "./_components/order-table-columns"
 import { RevenueStatsCard } from "./_components/revenue-stats-card"
 
 export default async function OrdersPage() {
   await assertManager()
   const recentOrders = await getRecentOrders()
-  const orderDetails = await getOrderDetails(recentOrders[0]?.id ?? "")
 
   return (
     <div className="grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3">
@@ -43,7 +44,9 @@ export default async function OrdersPage() {
           </CardContent>
         </Card>
       </div>
-      {orderDetails && <OrderDetailsCard order={orderDetails} />}
+      <Suspense fallback={<OrderDetailsCardSkeleton />}>
+        <OrderDetailsCard orderId={recentOrders[0]?.id} />
+      </Suspense>
     </div>
   )
 }

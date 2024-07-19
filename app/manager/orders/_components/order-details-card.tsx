@@ -8,17 +8,23 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import type { OrderDetails } from "@/lib/api/queries/orders"
+import { getOrderDetails } from "@/lib/api/queries/orders"
+import type { Order } from "@/lib/db/schema"
 import { formatCurrency } from "@/lib/formatters"
 import { format, formatISO } from "date-fns"
-import { Copy, CreditCard, Trash2 } from "lucide-react"
+import { CreditCard, Trash2 } from "lucide-react"
 import { CopyOrderIdButton } from "./copy-order-id-button"
+import { EmptyOrderDetailsCard } from "./empty-order-details-card"
 
 interface OrderDetailsProps {
-  order: NonNullable<OrderDetails>
+  orderId?: Order["id"]
 }
 
-export function OrderDetailsCard({ order }: OrderDetailsProps) {
+export async function OrderDetailsCard({ orderId }: OrderDetailsProps) {
+  if (!orderId) return <EmptyOrderDetailsCard />
+  const order = await getOrderDetails(orderId)
+  if (!order) return <EmptyOrderDetailsCard />
+
   const subtotal = order.products.reduce(
     (total, product) => total + product.price * product.quantity,
     0,
