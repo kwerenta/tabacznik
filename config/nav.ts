@@ -31,7 +31,7 @@ export const managerNavConfig: NavItem[] = [
   },
   {
     label: "Customers",
-    href: "#",
+    href: "/manager/customers",
     Icon: Users2,
   },
   {
