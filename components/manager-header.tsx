@@ -24,6 +24,7 @@ import { managerNavConfig } from "@/config/nav"
 import { Cigarette, PanelLeft, Settings, User } from "lucide-react"
 import Link from "next/link"
 import { LogoutDropdownItem } from "./logout-dropdown-item"
+import { ManagerBreadcrumbList } from "./manager-breadcrumb-list"
 import { MobileNavItem } from "./manager-nav-item"
 
 export function ManagerHeader() {
@@ -65,13 +66,7 @@ export function ManagerHeader() {
           </nav>
         </SheetContent>
       </Sheet>
-      <Breadcrumb className="hidden md:flex">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <ManagerBreadcrumbList />
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="ml-auto">
           <Button variant="outline" size="icon" className="rounded-full">
