@@ -12,6 +12,7 @@ import type { OrderDetails } from "@/lib/api/queries/orders"
 import { formatCurrency } from "@/lib/formatters"
 import { format, formatISO } from "date-fns"
 import { Copy, CreditCard, Trash2 } from "lucide-react"
+import { CopyOrderIdButton } from "./copy-order-id-button"
 
 interface OrderDetailsProps {
   order: NonNullable<OrderDetails>
@@ -29,14 +30,7 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
         <div className="grid gap-0.5">
           <CardTitle className="group flex items-center gap-2 text-lg">
             Order {order.id}
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <Copy className="h-3 w-3" />
-              <span className="sr-only">Copy Order ID</span>
-            </Button>
+            <CopyOrderIdButton orderId={order.id} />
           </CardTitle>
           <CardDescription>
             Date: {format(order.createdAt, "MMMM dd, yyyy")}
