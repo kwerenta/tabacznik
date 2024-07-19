@@ -19,9 +19,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { deleteCustomer } from "@/lib/api/actions/users"
 import type { User } from "@/lib/db/schema"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
+import { useAction } from "next-safe-action/hooks"
+import { toast } from "sonner"
 
 export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
   {
@@ -42,7 +45,18 @@ export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
   },
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
+      const customer = row.original
+
+      const { execute: deleteAction } = useAction(deleteCustomer, {
+        onSuccess: () => {
+          toast.success("Customer deleted successfully!")
+        },
+        onError: ({ error }) => {
+          toast.error(error.serverError)
+        },
+      })
+
       return (
         <AlertDialog>
           <DropdownMenu>
@@ -69,7 +83,9 @@ export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Delete</AlertDialogAction>
+              <AlertDialogAction onClick={() => deleteAction(customer.id)}>
+                Delete
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
