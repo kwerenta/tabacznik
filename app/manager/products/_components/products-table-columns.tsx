@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { deleteProduct } from "@/lib/api/actions/products"
 import type { Product } from "@/lib/db/schema"
+import { formatCurrency, formatNumber } from "@/lib/formatters"
 import type { ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -45,16 +47,17 @@ export const productColumns: ColumnDef<Product>[] = [
   {
     accessorKey: "price",
     header: "Price",
-    accessorFn: (product) => `${(product.price / 100).toFixed(2)} PLN`,
+    accessorFn: (product) => formatCurrency(product.price),
   },
   {
     accessorKey: "stock",
     header: "Stock",
+    accessorFn: (product) => formatNumber(product.stock),
   },
   {
     accessorKey: "createdAt",
     header: "Created At",
-    accessorFn: (product) => new Date(product.createdAt).toISOString(),
+    accessorFn: (product) => format(product.createdAt, "yyyy-MM-dd HH:ss"),
   },
   {
     id: "actions",

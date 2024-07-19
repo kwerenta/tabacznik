@@ -10,6 +10,7 @@ import {
 import { Progress } from "@/components/ui/progress"
 import { getOrderDetails, getRecentOrders } from "@/lib/api/queries/orders"
 import { assertManager } from "@/lib/auth"
+import { formatCurrency } from "@/lib/formatters"
 import { OrderDetailsCard } from "./_components/order-details"
 import { orderColumns } from "./_components/order-table-columns"
 
@@ -25,7 +26,9 @@ export default async function OrdersPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>This Week</CardDescription>
-              <CardTitle className="text-4xl">$1,329</CardTitle>
+              <CardTitle className="text-4xl">
+                {formatCurrency(132900)}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
@@ -39,7 +42,9 @@ export default async function OrdersPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>This Month</CardDescription>
-              <CardTitle className="text-4xl">$5,329</CardTitle>
+              <CardTitle className="text-4xl">
+                {formatCurrency(532900)}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">

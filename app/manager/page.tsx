@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { assertManager } from "@/lib/auth"
+import { formatCurrency, formatNumber } from "@/lib/formatters"
 import { CreditCard, DollarSign, Users } from "lucide-react"
 
 export default async function ManagerDashboardPage() {
@@ -20,7 +21,7 @@ export default async function ManagerDashboardPage() {
             <DollarSign className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">420.69 PLN</div>
+            <div className="text-2xl font-bold">{formatCurrency(42069)}</div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
@@ -32,7 +33,7 @@ export default async function ManagerDashboardPage() {
             <CreditCard className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+1234</div>
+            <div className="text-2xl font-bold">+{formatNumber(1234)}</div>
             <p className="text-xs text-muted-foreground">
               +19% from last month
             </p>
@@ -44,7 +45,7 @@ export default async function ManagerDashboardPage() {
             <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2115</div>
+            <div className="text-2xl font-bold">+{formatNumber(2115)}</div>
             <p className="text-xs text-muted-foreground">
               +11.2% from last month
             </p>

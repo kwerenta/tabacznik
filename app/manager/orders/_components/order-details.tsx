@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import type { OrderDetails } from "@/lib/api/queries/orders"
+import { formatCurrency } from "@/lib/formatters"
+import { format, formatISO } from "date-fns"
 import { Copy, CreditCard, Trash2 } from "lucide-react"
 
 interface OrderDetailsProps {
@@ -37,7 +39,7 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
             </Button>
           </CardTitle>
           <CardDescription>
-            Date: {order.createdAt.toISOString()}
+            Date: {format(order.createdAt, "MMMM dd, yyyy")}
           </CardDescription>
         </div>
         <div className="ml-auto flex items-center gap-1">
@@ -59,9 +61,7 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
                 <span className="text-muted-foreground">
                   {product.name} x <span>{product.quantity}</span>
                 </span>
-                <span>
-                  ${((product.price * product.quantity) / 100).toFixed(2)}
-                </span>
+                <span>{formatCurrency(product.price * product.quantity)}</span>
               </li>
             ))}
           </ul>
@@ -69,7 +69,7 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
           <ul className="grid gap-3">
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Subtotal</span>
-              <span>${(subtotal / 100).toFixed(2)}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </li>
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Shipping</span>
@@ -77,7 +77,7 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
             </li>
             <li className="flex items-center justify-between font-semibold">
               <span className="text-muted-foreground">Total</span>
-              <span>${(subtotal / 100).toFixed(2)}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </li>
           </ul>
         </div>
@@ -136,7 +136,11 @@ export function OrderDetailsCard({ order }: OrderDetailsProps) {
       <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
         <div className="text-xs text-muted-foreground">
           Updated{" "}
-          <time dateTime="2023-11-23">{order.updatedAt.toISOString()}</time>
+          <time
+            dateTime={formatISO(order.createdAt, { representation: "date" })}
+          >
+            {format(order.createdAt, "MMMM dd, yyyy")}
+          </time>
         </div>
       </CardFooter>
     </Card>

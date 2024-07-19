@@ -1,7 +1,9 @@
 "use client"
 
 import type { Order, User } from "@/lib/db/schema"
+import { formatCurrency } from "@/lib/formatters"
 import type { ColumnDef } from "@tanstack/react-table"
+import { formatISO } from "date-fns"
 
 export const orderColumns: ColumnDef<Order & { user: User; total: number }>[] =
   [
@@ -26,11 +28,12 @@ export const orderColumns: ColumnDef<Order & { user: User; total: number }>[] =
     {
       accessorKey: "createdAt",
       header: "Date",
-      accessorFn: (order) => order.createdAt.toISOString(),
+      accessorFn: (order) =>
+        formatISO(order.createdAt, { representation: "date" }),
     },
     {
       accessorKey: "total",
       header: "Amount",
-      accessorFn: (order) => `$${(order.total / 100).toFixed(2)}`,
+      accessorFn: (order) => formatCurrency(order.total),
     },
   ]
