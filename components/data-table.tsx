@@ -8,22 +8,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { Product } from "@/lib/db/schema"
 import {
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { productColumns } from "./products-table-columns"
 
-interface ProductsTableProps {
-  products: Product[]
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
-export function ProductsTable({ products }: ProductsTableProps) {
+export function DataTable<TData, TValue>({
+  data,
+  columns,
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    data: products,
-    columns: productColumns,
+    data,
+    columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -64,10 +67,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={productColumns.length}
-                className="h-24 text-center"
-              >
+              <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>

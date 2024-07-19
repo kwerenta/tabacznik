@@ -1,3 +1,4 @@
+import { DataTable } from "@/components/data-table"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -22,7 +23,7 @@ import { assertManager } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { ListFilter, PlusCircle } from "lucide-react"
 import Link from "next/link"
-import { ProductsTable } from "./_components/products-table"
+import { productColumns } from "./_components/products-table-columns"
 
 export default async function ProductsPage() {
   await assertManager()
@@ -81,7 +82,7 @@ export default async function ProductsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ProductsTable products={products} />
+          <DataTable columns={productColumns} data={products} />
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
