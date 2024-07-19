@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -40,5 +40,38 @@ export const products = sqliteTable("product", {
     .default(sql`(unixepoch())`)
     .$onUpdate(() => new Date()),
 })
-
 export type Product = typeof products.$inferSelect
+
+export const orders = sqliteTable("order", {
+  id: text("id").notNull().primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`)
+    .$onUpdate(() => new Date()),
+})
+export type Order = typeof orders.$inferSelect
+
+export const orderedProducts = sqliteTable(
+  "ordered_product",
+  {
+    id: integer("id").notNull().primaryKey(),
+    price: integer("price").notNull(),
+    quantity: integer("quantity").notNull(),
+    orderId: text("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+  },
+  (table) => ({
+    orderIndex: index("order_index").on(table.orderId),
+  }),
+)
+export type OrderedProduct = typeof orderedProducts.$inferSelect

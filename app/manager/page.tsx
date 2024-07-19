@@ -12,7 +12,7 @@ export default async function ManagerDashboardPage() {
   await assertManager()
 
   return (
-    <main className="space-y-4">
+    <div className="space-y-4">
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <Card className="md:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -66,6 +66,6 @@ export default async function ManagerDashboardPage() {
           <CardContent>List of recent sales</CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   )
 }

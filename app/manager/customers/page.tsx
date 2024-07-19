@@ -8,9 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { getCustomers } from "@/lib/api/queries/users"
+import { assertManager } from "@/lib/auth"
 import { customerColumns } from "./_components/customers-table-columns"
 
 export default async function CustomersPage() {
+  await assertManager()
   const customers = await getCustomers()
 
   return (
