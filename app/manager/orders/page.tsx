@@ -1,4 +1,3 @@
-import { DataTable } from "@/components/data-table"
 import {
   Card,
   CardContent,
@@ -12,10 +11,16 @@ import { formatCurrency } from "@/lib/formatters"
 import { Suspense } from "react"
 import { OrderDetailsCard } from "./_components/order-details-card"
 import { OrderDetailsCardSkeleton } from "./_components/order-details-card-skeleton"
-import { orderColumns } from "./_components/order-table-columns"
+import { OrderTable } from "./_components/order-table"
 import { RevenueStatsCard } from "./_components/revenue-stats-card"
 
-export default async function OrdersPage() {
+interface OrdersPageProps {
+  searchParams: {
+    order?: string
+  }
+}
+
+export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   await assertManager()
   const recentOrders = await getRecentOrders()
 
@@ -40,12 +45,15 @@ export default async function OrdersPage() {
             <CardDescription>Recent orders from your store.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTable columns={orderColumns} data={recentOrders} />
+            <OrderTable data={recentOrders} />
           </CardContent>
         </Card>
       </div>
-      <Suspense fallback={<OrderDetailsCardSkeleton />}>
-        <OrderDetailsCard orderId={recentOrders[0]?.id} />
+      <Suspense
+        key={searchParams.order || recentOrders[0]?.id}
+        fallback={<OrderDetailsCardSkeleton />}
+      >
+        <OrderDetailsCard orderId={searchParams.order || recentOrders[0]?.id} />
       </Suspense>
     </div>
   )
