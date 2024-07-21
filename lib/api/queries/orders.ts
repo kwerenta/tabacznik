@@ -10,10 +10,11 @@ import { subDays } from "date-fns"
 import { desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
 
 export async function getRecentOrders() {
+  const { isManager, passwordHash, ...userColumns } = getTableColumns(users)
   return await db
     .select({
       ...getTableColumns(orders),
-      user: users,
+      user: userColumns,
       total:
         sql`sum(${orderedProducts.price} * ${orderedProducts.quantity})`.mapWith(
           Number,
@@ -26,12 +27,14 @@ export async function getRecentOrders() {
     .groupBy(orderedProducts.orderId)
     .limit(10)
 }
+export type RecentOrder = Awaited<ReturnType<typeof getRecentOrders>>[number]
 
 export async function getOrderDetails(orderId: Order["id"]) {
+  const { isManager, passwordHash, ...userColumns } = getTableColumns(users)
   const result = await db
     .select({
       ...getTableColumns(orders),
-      user: users,
+      user: userColumns,
       product: {
         name: products.name,
         slug: products.slug,

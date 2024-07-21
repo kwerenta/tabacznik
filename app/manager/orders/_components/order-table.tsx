@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { Order, User } from "@/lib/db/schema"
+import type { RecentOrder } from "@/lib/api/queries/orders"
 import {
   type RowSelectionState,
   flexRender,
@@ -19,7 +19,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { orderColumns } from "./order-table-columns"
 
 interface OrderTableProps {
-  data: (Order & { user: User; total: number })[]
+  data: RecentOrder[]
 }
 
 export function OrderTable({ data }: OrderTableProps) {
