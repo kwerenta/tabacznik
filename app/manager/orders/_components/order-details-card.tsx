@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -12,8 +11,9 @@ import { getOrderDetails } from "@/lib/api/queries/orders"
 import type { Order } from "@/lib/db/schema"
 import { formatCurrency } from "@/lib/formatters"
 import { format, formatISO } from "date-fns"
-import { CreditCard, Trash2 } from "lucide-react"
+import { CreditCard } from "lucide-react"
 import { CopyOrderIdButton } from "./copy-order-id-button"
+import { DeleteOrderButton } from "./delete-order-button"
 import { EmptyOrderDetailsCard } from "./empty-order-details-card"
 
 interface OrderDetailsProps {
@@ -43,10 +43,7 @@ export async function OrderDetailsCard({ orderId }: OrderDetailsProps) {
           </CardDescription>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <Button size="icon" variant="outline" className="h-8 w-8">
-            <Trash2 className="h-3.5 w-3.5" />
-            <span className="sr-only">Delete</span>
-          </Button>
+          <DeleteOrderButton orderId={orderId} />
         </div>
       </CardHeader>
       <CardContent className="p-6 text-sm">
