@@ -6,7 +6,8 @@ import {
   products,
   users,
 } from "@/lib/db/schema"
-import { desc, eq, getTableColumns, sql } from "drizzle-orm"
+import { subDays } from "date-fns"
+import { desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
 
 export async function getRecentOrders() {
   return await db
@@ -55,5 +56,33 @@ export async function getOrderDetails(orderId: Order["id"]) {
     products: result.map(({ product }) => product),
   }
 }
-
 export type OrderDetails = Awaited<ReturnType<typeof getOrderDetails>>
+
+export async function getRevenueStats() {
+  const revenueSum = (type: "last" | "previous", days: number) => {
+    const query = sql.empty()
+    query
+      .append(sql`CASE WHEN DATE(${orders.createdAt}, 'auto') `)
+      .append(
+        sql`>= DATE('now', '-${sql.raw(`${(type === "last" ? 1 : 2) * days}`)} days') `,
+      )
+    if (type === "previous") query.append(sql`< DATE('now', '-${days} days') `)
+    query.append(
+      sql`THEN ${orderedProducts.price} * ${orderedProducts.quantity} ELSE 0 END`,
+    )
+    return sum(query).mapWith(Number)
+  }
+
+  const [result] = await db
+    .select({
+      last7Days: revenueSum("last", 7),
+      previous7Days: revenueSum("previous", 7),
+      last28Days: revenueSum("last", 28),
+      previous28Days: revenueSum("previous", 28),
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .where(gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)))
+
+  return result
+}

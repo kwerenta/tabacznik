@@ -5,9 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { getRecentOrders } from "@/lib/api/queries/orders"
+import { getRecentOrders, getRevenueStats } from "@/lib/api/queries/orders"
 import { assertManager } from "@/lib/auth"
-import { formatCurrency } from "@/lib/formatters"
 import { Suspense } from "react"
 import { OrderDetailsCard } from "./_components/order-details-card"
 import { OrderDetailsCardSkeleton } from "./_components/order-details-card-skeleton"
@@ -23,6 +22,7 @@ interface OrdersPageProps {
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   await assertManager()
   const recentOrders = await getRecentOrders()
+  const revenue = await getRevenueStats()
 
   return (
     <div className="grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3">
@@ -30,13 +30,13 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <RevenueStatsCard
             timeUnit="week"
-            title={formatCurrency(132900)}
-            progressValue={1}
+            currentRevenue={revenue?.last7Days}
+            previousRevenue={revenue?.previous7Days}
           />
           <RevenueStatsCard
             timeUnit="month"
-            title={formatCurrency(532900)}
-            progressValue={22}
+            currentRevenue={revenue?.last28Days}
+            previousRevenue={revenue?.previous28Days}
           />
         </div>
         <Card>
