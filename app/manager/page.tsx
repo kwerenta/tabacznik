@@ -14,9 +14,11 @@ import { DashboardStatsCard } from "./_components/dashboard-stats-card"
 
 export default async function ManagerDashboardPage() {
   await assertManager()
-  const revenueStats = await getRevenueStats(false)
-  const salesStats = await getSalesStats()
-  const customersStats = await getCustomersStats()
+  const [revenueStats, salesStats, customersStats] = await Promise.all([
+    getRevenueStats(false),
+    getSalesStats(),
+    getCustomersStats(),
+  ])
 
   return (
     <div className="space-y-4">

@@ -21,8 +21,10 @@ interface OrdersPageProps {
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   await assertManager()
-  const recentOrders = await getRecentOrders()
-  const revenue = await getRevenueStats()
+  const [recentOrders, revenue] = await Promise.all([
+    getRecentOrders(),
+    getRevenueStats(),
+  ])
 
   return (
     <div className="grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3">
