@@ -5,52 +5,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { getRevenueStats, getSalesStats } from "@/lib/api/queries/orders"
+import { getCustomersStats } from "@/lib/api/queries/users"
 import { assertManager } from "@/lib/auth"
-import { formatCurrency, formatNumber } from "@/lib/formatters"
+import { formatCurrency, formatNumberWithSign } from "@/lib/formatters"
 import { CreditCard, DollarSign, Users } from "lucide-react"
+import { DashboardStatsCard } from "./_components/dashboard-stats-card"
 
 export default async function ManagerDashboardPage() {
   await assertManager()
+  const revenueStats = await getRevenueStats(false)
+  const salesStats = await getSalesStats()
+  const customersStats = await getCustomersStats()
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="md:col-span-2 lg:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(42069)}</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
-            <CreditCard className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{formatNumber(1234)}</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
-            <Users className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{formatNumber(2115)}</div>
-            <p className="text-xs text-muted-foreground">
-              +11.2% from last month
-            </p>
-          </CardContent>
-        </Card>
+        <DashboardStatsCard
+          className="md:col-span-2 lg:col-span-1"
+          title="Total Revenue"
+          Icon={DollarSign}
+          stats={revenueStats}
+          formatter={formatCurrency}
+        />
+        <DashboardStatsCard
+          title="Sales"
+          Icon={CreditCard}
+          stats={salesStats}
+          formatter={formatNumberWithSign}
+        />
+
+        <DashboardStatsCard
+          title="Customers"
+          Icon={Users}
+          stats={customersStats}
+          formatter={formatNumberWithSign}
+        />
       </div>
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
         <Card className="lg:col-span-4">

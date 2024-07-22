@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { formatCurrency, formatPercent } from "@/lib/formatters"
+import { calculateProgress } from "@/lib/utils"
 
 interface RevenueStatsCardProps {
   timeUnit: "week" | "month"
@@ -25,9 +26,7 @@ export function RevenueStatsCard({
   timeUnit,
   previousRevenue,
 }: RevenueStatsCardProps) {
-  const progressValue = previousRevenue
-    ? (currentRevenue ?? 0) / previousRevenue - 1
-    : currentRevenue ?? 0
+  const progressValue = calculateProgress(currentRevenue, previousRevenue)
 
   return (
     <Card>
@@ -41,7 +40,6 @@ export function RevenueStatsCard({
       </CardHeader>
       <CardContent>
         <div className="text-xs text-muted-foreground">
-          {progressValue > 0 ? "+" : ""}
           {formatPercent(progressValue)} from last {timeUnitMap[timeUnit]} days
         </div>
       </CardContent>

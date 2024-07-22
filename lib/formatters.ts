@@ -12,9 +12,17 @@ export function formatNumber(value: number) {
   return NUMBER_FORMATTER.format(value)
 }
 
+const PROGRESS_FORMATTER = new Intl.NumberFormat("en-US", {
+  signDisplay: "exceptZero",
+})
+export function formatNumberWithSign(value: number) {
+  return PROGRESS_FORMATTER.format(value)
+}
+
 const PERCENT_FORMATTER = new Intl.NumberFormat("en-US", {
   style: "percent",
   maximumFractionDigits: 2,
+  signDisplay: "exceptZero",
 })
 export function formatPercent(value: number) {
   return PERCENT_FORMATTER.format(value)

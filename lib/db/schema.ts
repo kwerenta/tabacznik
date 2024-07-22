@@ -11,6 +11,9 @@ export const users = sqliteTable("user", {
   isManager: integer("is_manager", { mode: "boolean" })
     .notNull()
     .default(false),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
 })
 export type User = typeof users.$inferSelect
 
