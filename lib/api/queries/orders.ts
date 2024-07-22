@@ -91,7 +91,14 @@ export async function getRevenueStats(shouldIncludeLastWeek = true) {
 
 export async function getSalesStats() {
   const salesCount = (type: "last" | "previous", days: number) =>
-    sum(getStatsQuery(orders.createdAt, type, days)).mapWith(Number)
+    sum(
+      getStatsQuery(
+        orders.createdAt,
+        type,
+        days,
+        sql`${orderedProducts.quantity}`,
+      ),
+    ).mapWith(Number)
 
   const [result] = await db
     .select({
@@ -99,6 +106,7 @@ export async function getSalesStats() {
       previous28Days: salesCount("previous", 28),
     })
     .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
     .where(gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)))
 
   return result
