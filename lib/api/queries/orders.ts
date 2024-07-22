@@ -7,8 +7,8 @@ import {
   users,
 } from "@/lib/db/schema"
 import { getStatsQuery } from "@/lib/utils"
-import { subDays } from "date-fns"
-import { desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
+import { subDays, subYears } from "date-fns"
+import { asc, desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
 
 export async function getRecentOrders() {
   const { isManager, passwordHash, ...userColumns } = getTableColumns(users)
@@ -108,6 +108,42 @@ export async function getSalesStats() {
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
     .where(gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)))
+
+  return result
+}
+
+export async function getRecentSales() {
+  return await db
+    .select({
+      name: products.name,
+      quantity: orderedProducts.quantity,
+      createdAt: orders.createdAt,
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .innerJoin(products, eq(orderedProducts.productId, products.id))
+    .orderBy(desc(orders.createdAt))
+    .limit(10)
+}
+export type RecentSale = Awaited<ReturnType<typeof getRecentSales>>[number]
+
+export async function getLastYearRevenueByMonth() {
+  const month = sql`strftime('%m', ${orders.createdAt}, 'auto')`
+  const year = sql`strftime('%Y', ${orders.createdAt}, 'auto')`
+
+  const result = await db
+    .select({
+      date: sql`strftime('%Y-%m', ${orders.createdAt}, 'auto')`.mapWith(String),
+      revenue:
+        sql`sum(${orderedProducts.price} * ${orderedProducts.quantity})`.mapWith(
+          Number,
+        ),
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .groupBy(year, month)
+    .where(gte(orders.createdAt, subYears(new Date(), 1)))
+    .orderBy(asc(year), asc(month))
 
   return result
 }

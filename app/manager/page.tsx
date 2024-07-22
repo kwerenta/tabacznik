@@ -1,3 +1,4 @@
+import { DataTable } from "@/components/data-table"
 import {
   Card,
   CardContent,
@@ -5,19 +6,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { getRevenueStats, getSalesStats } from "@/lib/api/queries/orders"
+import {
+  getLastYearRevenueByMonth,
+  getRecentSales,
+  getRevenueStats,
+  getSalesStats,
+} from "@/lib/api/queries/orders"
 import { getCustomersStats } from "@/lib/api/queries/users"
 import { assertManager } from "@/lib/auth"
 import { formatCurrency, formatNumberWithSign } from "@/lib/formatters"
 import { CreditCard, DollarSign, Users } from "lucide-react"
 import { DashboardStatsCard } from "./_components/dashboard-stats-card"
+import { recentSaleColumns } from "./_components/recent-sales-table-columns"
+import { RevenueChart } from "./_components/revenue-chart"
 
 export default async function ManagerDashboardPage() {
   await assertManager()
-  const [revenueStats, salesStats, customersStats] = await Promise.all([
+  const [
+    revenueStats,
+    salesStats,
+    customersStats,
+    recentSales,
+    revenueByMonth,
+  ] = await Promise.all([
     getRevenueStats(false),
     getSalesStats(),
     getCustomersStats(),
+    getRecentSales(),
+    getLastYearRevenueByMonth(),
   ])
 
   return (
@@ -47,16 +63,22 @@ export default async function ManagerDashboardPage() {
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
+            <CardTitle>Revenue Overview</CardTitle>
           </CardHeader>
-          <CardContent>some graph</CardContent>
+          <CardContent className="pl-0">
+            <RevenueChart data={revenueByMonth} />
+          </CardContent>
         </Card>
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Sales</CardTitle>
-            <CardDescription>You made 22 sales this month.</CardDescription>
+            <CardDescription>
+              You made {salesStats?.last28Days} sales this month.
+            </CardDescription>
           </CardHeader>
-          <CardContent>List of recent sales</CardContent>
+          <CardContent>
+            <DataTable columns={recentSaleColumns} data={recentSales} />
+          </CardContent>
         </Card>
       </div>
     </div>
