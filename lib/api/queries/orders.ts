@@ -7,7 +7,7 @@ import {
   users,
 } from "@/lib/db/schema"
 import { getStatsQuery } from "@/lib/utils"
-import { subDays, subYears } from "date-fns"
+import { startOfMonth, subDays, subWeeks, subYears } from "date-fns"
 import { asc, desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
 
 export async function getRecentOrders() {
@@ -141,9 +141,73 @@ export async function getLastYearRevenueByMonth() {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .groupBy(year, month)
     .where(gte(orders.createdAt, subYears(new Date(), 1)))
+    .groupBy(year, month)
     .orderBy(asc(year), asc(month))
 
   return result
+}
+
+export async function getAverageMonthRevenue() {
+  const year = sql`strftime('%Y', ${orders.createdAt}, 'auto')`
+
+  const result = await db
+    .select({
+      year: year.mapWith(String),
+      revenue:
+        sql`sum(${orderedProducts.price} * ${orderedProducts.quantity})`.mapWith(
+          Number,
+        ),
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .where(gte(orders.createdAt, subYears(new Date(), 2)))
+    .groupBy(year)
+    .limit(2)
+
+  return result.map((entry) => ({ ...entry, revenue: entry.revenue / 12 }))
+}
+
+export async function getWeekSalesCount() {
+  const date = sql`strftime('%F', ${orders.createdAt}, 'auto')`
+
+  const result = await db
+    .select({
+      date: date.mapWith(String),
+      sales: sum(orderedProducts.quantity).mapWith(Number),
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .where(gte(orders.createdAt, subWeeks(new Date(), 1)))
+    .groupBy(date)
+    .limit(7)
+
+  return result
+}
+
+export async function getBestSellingProducts() {
+  const result = await db
+    .select({
+      product: products.name,
+      sales: sum(orderedProducts.quantity).mapWith(Number),
+    })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .innerJoin(products, eq(orderedProducts.productId, products.id))
+    .where(gte(orders.createdAt, startOfMonth(new Date())))
+    .groupBy(products.id)
+    .orderBy(desc(sum(orderedProducts.quantity)))
+    .limit(5)
+
+  return result
+}
+
+export async function getMonthTotalSales() {
+  const [result] = await db
+    .select({ total: sum(orderedProducts.quantity).mapWith(Number) })
+    .from(orders)
+    .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
+    .where(gte(orders.createdAt, startOfMonth(new Date())))
+
+  return result?.total
 }

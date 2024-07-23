@@ -36,7 +36,7 @@ export const managerNavConfig: NavItem[] = [
   },
   {
     label: "Analytics",
-    href: "#",
+    href: "/manager/analytics",
     Icon: LineChart,
   },
 ]
