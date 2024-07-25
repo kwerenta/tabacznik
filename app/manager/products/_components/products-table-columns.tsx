@@ -16,12 +16,39 @@ import type { Product } from "@/lib/db/schema"
 import { formatCurrency, formatNumber } from "@/lib/formatters"
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
-import { MoreHorizontal } from "lucide-react"
+import { ImageOff, MoreHorizontal } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import Image from "next/image"
 import Link from "next/link"
 import { toast } from "sonner"
 
-export const productColumns: ColumnDef<Product>[] = [
+export const productColumns: ColumnDef<
+  Product & { imageUrl: string | null }
+>[] = [
+  {
+    id: "image",
+    size: 64,
+    cell: ({ row }) => {
+      const product = row.original
+
+      if (!product.imageUrl)
+        return (
+          <div className="size-16 rounded-md grid place-items-center border border-dashed">
+            <ImageOff className="w-full h-full p-4" />
+          </div>
+        )
+
+      return (
+        <Image
+          src={product.imageUrl}
+          alt={`Image of ${product.name}`}
+          width={64}
+          height={64}
+          className="aspect-square rounded-md object-cover"
+        />
+      )
+    },
+  },
   {
     accessorKey: "name",
     header: "Name",
@@ -67,12 +94,14 @@ export const productColumns: ColumnDef<Product>[] = [
       return (
         <AlertDialog>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button aria-haspopup="true" size="icon" variant="ghost">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </DropdownMenuTrigger>
+            <div className="text-right">
+              <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+            </div>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <Link href={`/manager/products/${product.id}/edit`}>

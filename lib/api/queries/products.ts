@@ -1,14 +1,15 @@
 import { db } from "@/lib/db"
-import {
-  type Product,
-  type ProductImage,
-  productImages,
-  products,
-} from "@/lib/db/schema"
-import { asc, eq } from "drizzle-orm"
+import { type Product, productImages, products } from "@/lib/db/schema"
+import { and, asc, eq, getTableColumns } from "drizzle-orm"
 
 export async function getAllProducts() {
-  return await db.select().from(products)
+  return await db
+    .select({ ...getTableColumns(products), imageUrl: productImages.url })
+    .from(products)
+    .leftJoin(
+      productImages,
+      and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
+    )
 }
 
 export async function getProductById(id: Product["id"]) {
