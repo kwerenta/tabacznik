@@ -14,7 +14,7 @@ export default async function EditProductPage({
 }: EditProductPageProps) {
   await assertManager()
 
-  const [product] = await getProductById(+productId)
+  const product = await getProductById(+productId)
   if (!product) return notFound()
 
   return (

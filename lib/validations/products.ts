@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+export const MAX_PRODUCT_IMAGES = 4
+
 export const productIdSchema = z.number()
 
 export const newProductSchema = z.object({
@@ -8,6 +10,7 @@ export const newProductSchema = z.object({
   price: z.number().min(0),
   stock: z.number().min(0),
   isPublished: z.boolean(),
+  imageUrls: z.array(z.string().url()).min(0).max(MAX_PRODUCT_IMAGES),
 })
 export type NewProductValues = z.infer<typeof newProductSchema>
 

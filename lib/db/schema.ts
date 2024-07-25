@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm"
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core"
 
 export const users = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -44,6 +50,25 @@ export const products = sqliteTable("product", {
     .$onUpdate(() => new Date()),
 })
 export type Product = typeof products.$inferSelect
+
+export const productImages = sqliteTable(
+  "product_image",
+  {
+    id: integer("id").primaryKey(),
+    url: text("url").notNull(),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    order: integer("order").notNull(),
+  },
+  (table) => ({
+    imageOrderIndex: uniqueIndex("image_order_index").on(
+      table.productId,
+      table.order,
+    ),
+  }),
+)
+export type ProductImage = typeof productImages.$inferSelect
 
 export const orders = sqliteTable("order", {
   id: text("id").notNull().primaryKey(),

@@ -1,7 +1,13 @@
 "use client"
 
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -14,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { useUploadThing } from "@/hooks/use-upload-thing"
 import { createProduct, editProduct } from "@/lib/api/actions/products"
 import type { Product } from "@/lib/db/schema"
 import { cn } from "@/lib/utils"
@@ -22,34 +29,50 @@ import {
   newProductSchema,
 } from "@/lib/validations/products"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Upload } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { ImageInput } from "./image-input"
+import { ImagePreview } from "./image-preview"
+
+type FileWithURL = { file: File; url: string }
 
 interface ProductFormProps {
-  product?: Product
+  product?: Product & { imageUrls: string[] }
 }
 
 export function ProductForm({ product }: ProductFormProps) {
   const form = useForm<NewProductValues>({
     resolver: zodResolver(newProductSchema),
-    defaultValues: product
-      ? {
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          stock: product.stock,
-          isPublished: product.isPublished,
-        }
-      : {
-          name: "",
-          description: null,
-          price: 0,
-          stock: 0,
-          isPublished: false,
-        },
+    defaultValues: {
+      name: product?.name ?? "",
+      description: product?.description ?? null,
+      price: product?.price ?? 0,
+      stock: product?.stock ?? 0,
+      isPublished: product?.isPublished ?? false,
+      imageUrls: product?.imageUrls ?? [],
+    },
+  })
+
+  const [imageFiles, setImageFiles] = useState<FileWithURL[]>([])
+  let uploadToastId: number | string | undefined
+  const { startUpload, isUploading } = useUploadThing("imageUploader", {
+    onUploadBegin: () => {
+      uploadToastId = toast.loading("Uploading images...")
+    },
+    onClientUploadComplete: () => {
+      toast.success("Images uploaded successfully!", {
+        id: uploadToastId,
+      })
+    },
+    onUploadError: () => {
+      toast.error("Failed to upload images.", {
+        id: uploadToastId,
+      })
+    },
   })
 
   const { execute: createProductAction } = useAction(createProduct, {
@@ -70,9 +93,25 @@ export function ProductForm({ product }: ProductFormProps) {
     },
   })
 
-  const onSubmit = (values: NewProductValues) => {
-    if (product) editProductAction({ ...values, id: product.id })
-    else createProductAction(values)
+  const onSubmit = async (values: NewProductValues) => {
+    const uploadResult =
+      imageFiles.length > 0
+        ? await startUpload(imageFiles.map(({ file }) => file))
+        : undefined
+
+    const unchangedImages = uploadResult
+      ? values.imageUrls.slice(0, values.imageUrls.length - uploadResult.length)
+      : []
+
+    const input = {
+      ...values,
+      imageUrls: !uploadResult
+        ? values.imageUrls
+        : [...unchangedImages, ...uploadResult.map((res) => res.url)],
+    }
+
+    if (product) editProductAction({ ...input, id: product.id })
+    else createProductAction(input)
   }
 
   return (
@@ -220,6 +259,72 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                   )}
                 />
+              </CardContent>
+            </Card>
+            <Card className="overflow-hidden">
+              <CardHeader>
+                <CardTitle>Product Images</CardTitle>
+                <CardDescription>
+                  Add up to 4 images for the product. First image will be the
+                  main image.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2 grid-rows-[1fr_auto_auto] grid-cols-3">
+                  <FormField
+                    control={form.control}
+                    name="imageUrls"
+                    render={({ field }) => (
+                      <>
+                        {field.value.map((imageUrl, index) => (
+                          <ImagePreview
+                            key={imageUrl}
+                            url={imageUrl}
+                            index={index}
+                            onRemove={(url) => {
+                              field.onChange(
+                                field.value.filter(
+                                  (imageUrl) => imageUrl !== url,
+                                ),
+                              )
+                              setImageFiles((prevImages) =>
+                                prevImages.filter(
+                                  ({ url }) => url !== imageUrl,
+                                ),
+                              )
+                              URL.revokeObjectURL(url)
+                            }}
+                          />
+                        ))}
+                        <FormItem className="first:col-span-full">
+                          <FormLabel
+                            className={cn(
+                              "cursor-pointer flex aspect-square w-full items-center justify-center rounded-md border border-dashed",
+                              field.value.length === 4 && "hidden",
+                            )}
+                          >
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <span className="sr-only">Upload</span>
+                          </FormLabel>
+                          <FormControl>
+                            <ImageInput
+                              disabled={field.value.length === 4 || isUploading}
+                              onChange={(file) => {
+                                const url = URL.createObjectURL(file)
+                                field.onChange([...field.value, url])
+                                setImageFiles((prevImages) => [
+                                  ...prevImages,
+                                  { file, url },
+                                ])
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                        <FormMessage className="row-start-3 col-span-full" />
+                      </>
+                    )}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
