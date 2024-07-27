@@ -51,6 +51,7 @@ export async function getPopularProducts() {
       and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
     )
     .innerJoin(orderedProducts, eq(products.id, orderedProducts.productId))
+    .where(eq(products.isPublished, true))
     .groupBy(products.id)
     .orderBy(
       desc(sum(sql`${orderedProducts.price} * ${orderedProducts.quantity}`)),
@@ -67,6 +68,7 @@ export async function getNewProducts() {
       productImages,
       and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
     )
+    .where(eq(products.isPublished, true))
     .orderBy(desc(products.createdAt))
     .limit(5)
 }
