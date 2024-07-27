@@ -1,6 +1,11 @@
 import { db } from "@/lib/db"
-import { type Product, productImages, products } from "@/lib/db/schema"
-import { and, asc, eq, getTableColumns } from "drizzle-orm"
+import {
+  type Product,
+  orderedProducts,
+  productImages,
+  products,
+} from "@/lib/db/schema"
+import { and, asc, desc, eq, getTableColumns, sql, sum } from "drizzle-orm"
 
 export async function getAllProducts() {
   return await db
@@ -35,4 +40,33 @@ export async function getProductById(id: Product["id"]) {
       )
       .map(({ imageUrl }) => imageUrl),
   }
+}
+
+export async function getPopularProducts() {
+  return await db
+    .select({ ...getTableColumns(products), imageUrl: productImages.url })
+    .from(products)
+    .leftJoin(
+      productImages,
+      and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
+    )
+    .innerJoin(orderedProducts, eq(products.id, orderedProducts.productId))
+    .groupBy(products.id)
+    .orderBy(
+      desc(sum(sql`${orderedProducts.price} * ${orderedProducts.quantity}`)),
+      desc(products.createdAt),
+    )
+    .limit(5)
+}
+
+export async function getNewProducts() {
+  return await db
+    .select({ ...getTableColumns(products), imageUrl: productImages.url })
+    .from(products)
+    .leftJoin(
+      productImages,
+      and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
+    )
+    .orderBy(desc(products.createdAt))
+    .limit(5)
 }
