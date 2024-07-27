@@ -2,6 +2,7 @@ import { validateRequest } from "@/lib/auth"
 import {
   Cigarette,
   LogIn,
+  PanelLeft,
   Search,
   ShoppingBasket,
   Store,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { LogoutDropdownItem } from "./logout-dropdown-item"
+import { MobileNavItem } from "./manager-nav-item"
 import { Button, buttonVariants } from "./ui/button"
 import {
   DropdownMenu,
@@ -20,6 +22,13 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet"
 import {
   Tooltip,
   TooltipContent,
@@ -33,11 +42,49 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/65">
       <div className="container flex h-14 items-center">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button size="icon" variant="outline" className="md:hidden">
+              <PanelLeft className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="sm:max-w-xs">
+            <nav className="grid gap-6 text-lg font-medium">
+              <SheetTitle>
+                <Link
+                  href="/"
+                  className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+                >
+                  <Cigarette className="h-5 w-5 transition-all group-hover:scale-110" />
+                  <span className="sr-only">Tabacznik</span>
+                </Link>
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                Mobile navigation
+              </SheetDescription>
+              <Input
+                type="search"
+                className="text-xs"
+                placeholder="Search products..."
+              />
+              <Link href="#" className="hover:underline">
+                Products
+              </Link>
+              <Link href="#" className="hover:underline">
+                About Us
+              </Link>
+              <Link href="/manager" className="hover:underline">
+                Manager
+              </Link>
+            </nav>
+          </SheetContent>
+        </Sheet>
         <nav className="flex-1 flex gap-4 items-center">
-          <Link href="#" className="hover:underline">
+          <Link href="#" className="hover:underline hidden md:inline">
             Products
           </Link>
-          <Link href="#" className="hover:underline">
+          <Link href="#" className="hover:underline hidden md:inline">
             About Us
           </Link>
         </nav>
@@ -48,7 +95,7 @@ export async function SiteHeader() {
           <h1 className="text-2xl font-semibold">tabacznik</h1>
         </Link>
         <nav className="flex-1 flex justify-end gap-2 items-center">
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center pl-4">
             <Button type="button" size="icon" className="rounded-r-none">
               <Search className="size-4" />
             </Button>
@@ -61,7 +108,11 @@ export async function SiteHeader() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative shrink-0"
+                >
                   <div className="absolute bg-primary text-primary-foreground top-0 right-0 size-[18px] flex justify-center items-center rounded-full text-xs">
                     10
                   </div>
@@ -76,7 +127,7 @@ export async function SiteHeader() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" className="shrink-0">
                         <User className="size-5" />
                         <span className="sr-only">Open user menu</span>
                       </Button>
@@ -103,6 +154,7 @@ export async function SiteHeader() {
                     className={buttonVariants({
                       variant: "ghost",
                       size: "icon",
+                      className: "shrink-0",
                     })}
                   >
                     <LogIn className="size-5" />
@@ -120,6 +172,7 @@ export async function SiteHeader() {
                     className={buttonVariants({
                       variant: "ghost",
                       size: "icon",
+                      className: "hidden md:inline-flex shrink-0",
                     })}
                   >
                     <Store className="size-5 text-primary" />
