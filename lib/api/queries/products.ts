@@ -17,6 +17,18 @@ export async function getAllProducts() {
     )
 }
 
+export async function getProducts() {
+  return await db
+    .select({ ...getTableColumns(products), imageUrl: productImages.url })
+    .from(products)
+    .leftJoin(
+      productImages,
+      and(eq(products.id, productImages.productId), eq(productImages.order, 0)),
+    )
+    .where(eq(products.isPublished, true))
+    .orderBy(asc(products.name))
+}
+
 export async function getProductById(id: Product["id"]) {
   const result = await db
     .select({

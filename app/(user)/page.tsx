@@ -13,7 +13,7 @@ export default async function IndexPage() {
         <h2 className="text-xl font-semibold underline mb-4">
           Most popular products
         </h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           {popularProducts.map((product) => (
             <ProductShowcase key={product.id} product={product} />
           ))}
@@ -21,7 +21,7 @@ export default async function IndexPage() {
       </section>
       <section className="w-full">
         <h2 className="text-xl font-semibold underline mb-4">New products</h2>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           {newProducts.map((product) => (
             <ProductShowcase key={product.id} product={product} />
           ))}

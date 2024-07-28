@@ -68,7 +68,7 @@ export async function SiteHeader() {
                 className="text-xs"
                 placeholder="Search products..."
               />
-              <Link href="#" className="hover:underline">
+              <Link href="/products" className="hover:underline">
                 Products
               </Link>
               <Link href="#" className="hover:underline">
@@ -81,7 +81,7 @@ export async function SiteHeader() {
           </SheetContent>
         </Sheet>
         <nav className="flex-1 flex gap-4 items-center">
-          <Link href="#" className="hover:underline hidden md:inline">
+          <Link href="/products" className="hover:underline hidden md:inline">
             Products
           </Link>
           <Link href="#" className="hover:underline hidden md:inline">

@@ -13,7 +13,7 @@ export function ProductShowcase({ product }: ProductShowcaseProps) {
     <Link
       key={product.id}
       href={`/products/${product.slug}`}
-      className="flex flex-col hover:scale-110 transition-transform group"
+      className="flex flex-col shrink-0 hover:scale-110 transition-transform group"
     >
       {product.imageUrl ? (
         <Image
