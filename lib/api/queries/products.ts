@@ -42,6 +42,31 @@ export async function getProductById(id: Product["id"]) {
   }
 }
 
+export async function getProductBySlug(slug: Product["slug"]) {
+  const result = await db
+    .select({
+      product: products,
+      imageUrl: productImages.url,
+    })
+    .from(products)
+    .where(and(eq(products.slug, slug), eq(products.isPublished, true)))
+    .leftJoin(productImages, eq(products.id, productImages.productId))
+    .orderBy(asc(productImages.order))
+
+  const entry = result[0]
+  if (!entry) return null
+
+  return {
+    ...entry.product,
+    imageUrls: result
+      .filter(
+        (entry): entry is { product: Product; imageUrl: string } =>
+          entry.imageUrl !== null,
+      )
+      .map(({ imageUrl }) => imageUrl),
+  }
+}
+
 export async function getPopularProducts() {
   return await db
     .select({ ...getTableColumns(products), imageUrl: productImages.url })
