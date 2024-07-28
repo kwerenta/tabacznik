@@ -8,8 +8,10 @@
     "start": "next start",
     "lint:fix": "biome lint --write",
     "lint": "biome lint",
-    "format:write": "biome format --write",
-    "format:check": "biome format",
+    "format:fix": "biome format --write",
+    "format": "biome format",
+    "code:check": "bun format && bun lint",
+    "code:fix": "bun format:fix && bun lint:fix",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push"
   },
