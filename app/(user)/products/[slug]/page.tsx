@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Carousel,
   CarouselContent,
@@ -6,13 +5,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { getProductBySlug } from "@/lib/api/queries/products"
 import { formatCurrency } from "@/lib/formatters"
 import { ImageOff } from "lucide-react"
 import Image from "next/image"
 import { notFound } from "next/navigation"
+import { AddToCartInput } from "./_components/add-to-cart-input"
 
 interface ProductPageProps {
   params: { slug: string }
@@ -60,11 +58,15 @@ export default async function ProductPage({
             <div className="text-xl">{formatCurrency(product.price)}</div>
             <div className="text-xs text-muted-foreground">Tax included.</div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="quantity">Quantity</Label>
-            <Input id="quantity" type="number" min={1} defaultValue={1} />
-          </div>
-          <Button>Add to cart</Button>
+          <AddToCartInput
+            product={{
+              id: product.id,
+              name: product.name,
+              slug: product.slug,
+              imageUrl: product.imageUrls[0] ?? null,
+              price: product.price,
+            }}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-2">

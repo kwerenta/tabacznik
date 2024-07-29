@@ -1,16 +1,8 @@
 import { validateRequest } from "@/lib/auth"
-import {
-  Cigarette,
-  LogIn,
-  PanelLeft,
-  Search,
-  ShoppingBasket,
-  Store,
-  User,
-} from "lucide-react"
+import { Cigarette, LogIn, PanelLeft, Search, Store, User } from "lucide-react"
 import Link from "next/link"
+import { CartHeaderButton } from "./cart-header-button"
 import { LogoutDropdownItem } from "./logout-dropdown-item"
-import { MobileNavItem } from "./manager-nav-item"
 import { Button, buttonVariants } from "./ui/button"
 import {
   DropdownMenu,
@@ -106,22 +98,7 @@ export async function SiteHeader() {
             />
           </div>
           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative shrink-0"
-                >
-                  <div className="absolute bg-primary text-primary-foreground top-0 right-0 size-[18px] flex justify-center items-center rounded-full text-xs">
-                    10
-                  </div>
-                  <ShoppingBasket className="size-5" />
-                  <span className="sr-only">Cart</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Cart</TooltipContent>
-            </Tooltip>
+            <CartHeaderButton />
             {user ? (
               <DropdownMenu>
                 <Tooltip>
