@@ -13,6 +13,9 @@ export type CartState = {
 
 export type CartActions = {
   addProduct: (product: CartProduct) => void
+  removeProduct: (productId: CartProduct["id"]) => void
+  updateQuantity: (productId: CartProduct["id"], newQuantity: number) => void
+  clearCart: () => void
 }
 
 export type CartStore = CartState & CartActions
@@ -51,6 +54,21 @@ export const createCartStore = (initState: CartState = defaultInitState) => {
         ...initState,
         addProduct: (product) =>
           set((state) => addProductToCart(state, product)),
+        removeProduct: (productId) =>
+          set((state) => ({
+            products: state.products.filter(
+              (product) => product.id !== productId,
+            ),
+          })),
+        updateQuantity: (productId, newQuantity) =>
+          set((state) => ({
+            products: state.products.map((product) =>
+              product.id === productId
+                ? { ...product, quantity: newQuantity }
+                : product,
+            ),
+          })),
+        clearCart: () => set(() => ({ products: [] })),
       }),
       {
         name: "cart",

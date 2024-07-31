@@ -22,7 +22,7 @@ export function CartHeaderButton() {
               className="relative shrink-0"
               asChild
             >
-              <Link href="#">
+              <Link href="/cart">
                 {products.length > 0 && (
                   <div className="absolute bg-primary text-primary-foreground top-0 right-0 size-[18px] flex justify-center items-center rounded-full text-xs">
                     {products.length}
@@ -75,7 +75,7 @@ export function CartHeaderButton() {
                     </Link>
                   ))}
                 </div>
-                <Link href="#" className={buttonVariants()}>
+                <Link href="/cart" className={buttonVariants()}>
                   Go to cart
                 </Link>
               </>
