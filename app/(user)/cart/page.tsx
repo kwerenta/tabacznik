@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { CartItems } from "./_components/cart-items"
+import { CheckoutButton } from "./_components/checkout-button"
 import { ClearCartButton } from "./_components/clear-cart-button"
 
 export default function CartPage() {
@@ -10,7 +10,7 @@ export default function CartPage() {
         <ClearCartButton />
       </div>
       <CartItems />
-      <Button>Checkout</Button>
+      <CheckoutButton />
     </main>
   )
 }
