@@ -10,12 +10,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useBasicAction } from "@/hooks/use-basic-action"
 import { deleteCustomer } from "@/lib/api/actions/users"
 import type { User } from "@/lib/db/schema"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
-import { useAction } from "next-safe-action/hooks"
-import { toast } from "sonner"
 
 export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
   {
@@ -39,14 +38,10 @@ export const customerColumns: ColumnDef<Omit<User, "passwordHash">>[] = [
     cell: ({ row }) => {
       const customer = row.original
 
-      const { execute: deleteAction } = useAction(deleteCustomer, {
-        onSuccess: () => {
-          toast.success("Customer deleted successfully!")
-        },
-        onError: ({ error }) => {
-          toast.error(error.serverError)
-        },
-      })
+      const { execute: deleteAction } = useBasicAction(
+        deleteCustomer,
+        "Customer deleted successfully!",
+      )
 
       return (
         <AlertDialog>

@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { useBasicAction } from "@/hooks/use-basic-action"
 import { useUploadThing } from "@/hooks/use-upload-thing"
 import { createProduct, editProduct } from "@/lib/api/actions/products"
 import type { Product } from "@/lib/db/schema"
@@ -30,7 +31,6 @@ import {
 } from "@/lib/validations/products"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronLeft, Upload } from "lucide-react"
-import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -75,23 +75,14 @@ export function ProductForm({ product }: ProductFormProps) {
     },
   })
 
-  const { execute: createProductAction } = useAction(createProduct, {
-    onSuccess: () => {
-      toast.success("Product created successfully!")
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError)
-    },
-  })
-
-  const { execute: editProductAction } = useAction(editProduct, {
-    onSuccess: () => {
-      toast.success("Product edited successfully!")
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError)
-    },
-  })
+  const { execute: createProductAction } = useBasicAction(
+    createProduct,
+    "Product created successfully!",
+  )
+  const { execute: editProductAction } = useBasicAction(
+    editProduct,
+    "Product edited successfully!",
+  )
 
   const onSubmit = async (values: NewProductValues) => {
     const uploadResult =

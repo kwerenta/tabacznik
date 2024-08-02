@@ -11,16 +11,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useBasicAction } from "@/hooks/use-basic-action"
 import { deleteProduct } from "@/lib/api/actions/products"
 import type { Product } from "@/lib/db/schema"
 import { formatCurrency, formatNumber } from "@/lib/formatters"
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { ImageOff, MoreHorizontal } from "lucide-react"
-import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import Link from "next/link"
-import { toast } from "sonner"
 
 export const productColumns: ColumnDef<
   Product & { imageUrl: string | null }
@@ -82,14 +81,10 @@ export const productColumns: ColumnDef<
     cell: ({ row }) => {
       const product = row.original
 
-      const { execute: deleteAction } = useAction(deleteProduct, {
-        onSuccess: () => {
-          toast.success("Product deleted successfully!")
-        },
-        onError: ({ error }) => {
-          toast.error(error.serverError)
-        },
-      })
+      const { execute: deleteAction } = useBasicAction(
+        deleteProduct,
+        "Product deleted successfully!",
+      )
 
       return (
         <AlertDialog>
