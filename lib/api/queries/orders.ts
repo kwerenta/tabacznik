@@ -8,7 +8,7 @@ import {
 } from "@/lib/db/schema"
 import { getStatsQuery } from "@/lib/utils"
 import { startOfMonth, subDays, subWeeks, subYears } from "date-fns"
-import { asc, desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
+import { and, asc, desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm"
 
 export async function getRecentOrders() {
   const { isManager, passwordHash, ...userColumns } = getTableColumns(users)
@@ -84,7 +84,12 @@ export async function getRevenueStats(shouldIncludeLastWeek = true) {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)))
+    .where(
+      and(
+        gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)),
+        eq(orders.isPaid, true),
+      ),
+    )
 
   return result
 }
@@ -107,7 +112,12 @@ export async function getSalesStats() {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)))
+    .where(
+      and(
+        gte(orders.createdAt, subDays(new Date(), 2 * 4 * 7)),
+        eq(orders.isPaid, true),
+      ),
+    )
 
   return result
 }
@@ -122,6 +132,7 @@ export async function getRecentSales() {
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
     .innerJoin(products, eq(orderedProducts.productId, products.id))
+    .where(eq(orders.isPaid, true))
     .orderBy(desc(orders.createdAt))
     .limit(10)
 }
@@ -141,7 +152,12 @@ export async function getLastYearRevenueByMonth() {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, subYears(new Date(), 1)))
+    .where(
+      and(
+        gte(orders.createdAt, subYears(new Date(), 1)),
+        eq(orders.isPaid, true),
+      ),
+    )
     .groupBy(year, month)
     .orderBy(asc(year), asc(month))
 
@@ -161,7 +177,12 @@ export async function getAverageMonthRevenue() {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, subYears(new Date(), 2)))
+    .where(
+      and(
+        gte(orders.createdAt, subYears(new Date(), 2)),
+        eq(orders.isPaid, true),
+      ),
+    )
     .groupBy(year)
     .limit(2)
 
@@ -178,7 +199,12 @@ export async function getWeekSalesCount() {
     })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, subWeeks(new Date(), 1)))
+    .where(
+      and(
+        gte(orders.createdAt, subWeeks(new Date(), 1)),
+        eq(orders.isPaid, true),
+      ),
+    )
     .groupBy(date)
     .limit(7)
 
@@ -194,7 +220,12 @@ export async function getBestSellingProducts() {
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
     .innerJoin(products, eq(orderedProducts.productId, products.id))
-    .where(gte(orders.createdAt, startOfMonth(new Date())))
+    .where(
+      and(
+        gte(orders.createdAt, startOfMonth(new Date())),
+        eq(orders.isPaid, true),
+      ),
+    )
     .groupBy(products.id)
     .orderBy(desc(sum(orderedProducts.quantity)))
     .limit(5)
@@ -207,7 +238,12 @@ export async function getMonthTotalSales() {
     .select({ total: sum(orderedProducts.quantity).mapWith(Number) })
     .from(orders)
     .innerJoin(orderedProducts, eq(orders.id, orderedProducts.orderId))
-    .where(gte(orders.createdAt, startOfMonth(new Date())))
+    .where(
+      and(
+        gte(orders.createdAt, startOfMonth(new Date())),
+        eq(orders.isPaid, true),
+      ),
+    )
 
   return result?.total
 }

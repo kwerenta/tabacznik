@@ -1,5 +1,6 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge"
 import type { RecentOrder } from "@/lib/api/queries/orders"
 import { formatCurrency } from "@/lib/formatters"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -29,6 +30,17 @@ export const orderColumns: ColumnDef<RecentOrder>[] = [
     header: "Date",
     accessorFn: (order) =>
       formatISO(order.createdAt, { representation: "date" }),
+  },
+  {
+    accessorKey: "isPaid",
+    cell: ({ row }) => {
+      const order = row.original
+      return (
+        <Badge variant={order.isPaid ? "default" : "secondary"}>
+          {order.isPaid ? "Paid" : "Not paid"}
+        </Badge>
+      )
+    },
   },
   {
     accessorKey: "total",

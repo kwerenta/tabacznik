@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { orderedProducts, products } from "@/lib/db/schema"
+import { orderedProducts, orders, products } from "@/lib/db/schema"
 import { stripe } from "@/lib/stripe"
 import { type SQL, eq, inArray, sql } from "drizzle-orm"
 import { headers } from "next/headers"
@@ -49,15 +49,22 @@ export const POST = async (req: NextRequest) => {
     }
     setSQL.push(sql`END)`)
 
-    await db
-      .update(products)
-      .set({ stock: sql.join(setSQL, sql.raw(" ")) })
-      .where(
-        inArray(
-          products.id,
-          boughtProducts.map((product) => product.id),
-        ),
-      )
+    await db.transaction(async (tx) => {
+      await tx
+        .update(orders)
+        .set({ isPaid: true })
+        .where(eq(orders.id, orderId))
+
+      await tx
+        .update(products)
+        .set({ stock: sql.join(setSQL, sql.raw(" ")) })
+        .where(
+          inArray(
+            products.id,
+            boughtProducts.map((product) => product.id),
+          ),
+        )
+    })
   }
 
   return new NextResponse(null, { status: 200 })
